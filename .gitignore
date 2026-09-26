@@ -1,0 +1,11 @@
+## .NET & Visual Studio
+[Bb]in/
+[Oo]bj/
+.vs/
+*.user
+*.userosscache
+*.sln.docstates
+
+## OS & Tooling
+.DS_Store
+Thumbs.db
