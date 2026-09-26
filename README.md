@@ -15,21 +15,21 @@ A high-throughput, enterprise-grade distributed URL Shortener API built with **.
 
 ```mermaid
 graph TD
-    Client[🌐 User Browser / App] -->|HTTP Request| API[⚡ ASP.NET Core 10 Web API]
+    Client["User Browser / Client"] -->|HTTP Request| API["ASP.NET Core 10 Web API"]
 
-    subgraph Security Katmanı
-        API -->|Check IP Limits| RL[🛡️ IP Rate Limiter - Fixed Window]
+    subgraph "Security Layer"
+        API -->|Check IP Limits| RL["IP Rate Limiter"]
     end
 
-    subgraph High-Speed Yönlendirme (Read Path < 2ms)
-        API -->|1. Try Cache| Redis[(⚡ Redis 7 In-Memory Cache)]
-        Redis -.->|Cache Miss| PG[(🐘 PostgreSQL 16 Main DB)]
+    subgraph "High-Speed Redirect Path"
+        API -->|1. Try Cache| Redis[("Redis 7 In-Memory Cache")]
+        Redis -.->|Cache Miss| PG[("PostgreSQL 16 Main DB")]
     end
 
-    subgraph Event-Driven Asenkron Analitik Hattı
-        API -->|2. Fire-and-Forget Publish| MQ[🐇 RabbitMQ Message Queue]
-        MQ -->|Consume Batch| Worker[⚙️ UrlClickConsumerWorker BackgroundService]
-        Worker -->|3. Bulk Insert 1000s| Logs[(📊 PostgreSQL url_click_logs)]
+    subgraph "Event-Driven Analytics Pipeline"
+        API -->|2. Async Publish| MQ["RabbitMQ Message Queue"]
+        MQ -->|Consume Batch| Worker["UrlClickConsumerWorker Service"]
+        Worker -->|3. Bulk Insert| Logs[("PostgreSQL url_click_logs")]
     end
 ```
 
@@ -39,12 +39,12 @@ graph TD
 
 ```mermaid
 sequenceDiagram
-    participant User as 🌐 User / Client
-    participant Controller as ⚡ Controller (API)
-    participant Redis as ⚡ Redis Cache
-    participant MQ as 🐇 RabbitMQ Queue
-    participant Worker as ⚙️ Consumer Worker
-    participant DB as 🐘 PostgreSQL DB
+    participant User as User / Client
+    participant Controller as Controller (API)
+    participant Redis as Redis Cache
+    participant MQ as RabbitMQ Queue
+    participant Worker as Consumer Worker
+    participant DB as PostgreSQL DB
 
     User->>Controller: GET /{shortCode} (e.g. GET /2d)
     Controller->>Redis: Check key "url:2d"
